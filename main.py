@@ -194,9 +194,9 @@ def verify_skill(job_skill,resume_skill):
 #normalize skill
 
 def normalize_skill(skill):
-     skill=skill.strip().lower
-     skill=" ".join(skill.split())
-     return skill
+    skill=skill.strip().lower()
+    skill=" ".join(skill.split())
+    return skill
 
 #extracting the skills and  generating the embedding for them
 
@@ -212,8 +212,21 @@ def skills_match(file, job_description):
     match = []
 
     if not resume_skills or not job_skills_names:
-        return []
-
+        return {
+            "analysis": [],
+            "summary": {
+                "matched_skills": [],
+                "required_missing_skills": [],
+                "preferred_missing_skills": [],
+                "missing_skills": [],
+                "related_skills": [],
+            },
+            "skill_breakdown": {
+                "required_skills": {"total": 0, "matched": 0, "missing": 0},
+                "preferred_skills": {"total": 0, "matched": 0, "missing": 0},
+                "unspecified_skills": {"total": 0, "matched": 0, "missing": 0},
+            },
+        }
     for i in range(len(job_skills)):
         found_match = False
         matched_resume_skill = None
@@ -272,12 +285,23 @@ def skills_match(file, job_description):
 
                 if resume_skill:
                     used_skills.append(resume_skill) 
+        experience_months=verify_experience(job_skill,resume_data["experiences"])
+        if resume_skill is None:
+            requirement_satisfaction = "No"
+        else:
+            required_months=job_skill["min_years"]*12
+
+            if experience_months>=required_months:
+                requirement_satisfaction="Yes"
+            else:
+                requirement_satisfaction="No"
         match_data = {
             "job_skill": job_skill,
             "resume_skill": resume_skill,
             "matching_score": float(matching_score),
             "category": category,
-            "experience_months":verify_experience(job_skill["skill"],resume_data["experiences"])
+            "experience_months":experience_months,
+            "requirement_satisfaction":requirement_satisfaction
         }
         match.append(match_data)
     matched_skills=[]
@@ -367,20 +391,36 @@ def calculate_experience(start_date,end_date):
 
 def verify_experience(job_skill,resume_experiences):
     total_months=0
+    date_range=[]
     for item in resume_experiences:
+        months=None
         print(item)
-        if job_skill in item["domain"]:
-            months=calculate_experience(item["start_date"],item["end_date"])
-            if months is not None:
-                total_months+=months
+        if job_skill["skill"] in item["domain"]:
+            if job_skill["experience_type"]=="any":
+                date_range.append((item["start_date"],item["end_date"]))
+            elif job_skill["experience_type"]==item["type"]:
+                date_range.append((item["start_date"],item["end_date"]))
+            else:
+                continue
+    date_range.sort()
+    sorted_list=[]
+    for item in date_range:
+        if not  sorted_list:
+            sorted_list.append(item)
+            continue
+        last_range=sorted_list[-1]
+        if item[0]<=last_range[1]:
+             new_end=max(last_range[1],item[1])
+             sorted_list[-1]=(last_range[0],new_end)
+        else:
+             sorted_list.append(item)
+    for item in sorted_list:
+        months=calculate_experience(item[0],item[1])
+        if months is not None:
+             total_months+=months
     return total_months
-          
-
-
-  
              
-       
-     
+         
 #calculating the wightage score
 def weight_calculation(match):
     required_score=[]
@@ -436,6 +476,14 @@ response_format_for_job={
                                              },
                                         "min_years":{
                                              "type":"integer"
+                                        },
+                                        "experience_type":{
+                                            "type":"string",
+                                             "enum":[
+                                                  "any",
+                                                  "work",
+                                                  "project"
+                                             ],
                                         }
                                     }
                             }
@@ -620,6 +668,51 @@ def extract_job_info(job_description):
                     "at least 2 years of SQL" → SQL: min_years = 2
                     "3-5 years of backend development experience" → min_years = 3
                     "Familiarity with Docker" (no years mentioned) → Docker: min_years = 0
+                    EXPERIENCE TYPE EXTRACTION RULES:
+
+                        For every skill, also determine what type of experience the job description requires.
+                        Return exactly ONE of these values:
+                        "any"
+                        "work"
+                        "project"
+
+                        ANY:
+                        Use "any" when the job description asks for a general amount of experience
+                        without explicitly restricting the experience to employment, professional work,
+                        industry experience, or projects.
+
+                        Examples:
+                        "1 year of Python experience" → experience_type = "any"
+                        "At least 2 years of experience with SQL" → experience_type = "any"
+                        "3 years of Flutter experience" → experience_type = "any"
+
+                        WORK:
+                        Use "work" when the job description explicitly requires professional,
+                        employment, industry, internship, freelance, or similar work experience.
+
+                        Examples:
+                        "1 year of professional Python experience" → experience_type = "work"
+                        "At least 2 years of industry experience with Java" → experience_type = "work"
+                        "2 years of professional software development experience" → experience_type = "work"
+                        "1 year of relevant work experience in Python" → experience_type = "work"
+
+                        PROJECT:
+                        Use "project" when the job description explicitly requires project-based
+                        experience or experience gained through projects.
+
+                        Examples:
+                        "1 year of project experience using Python" → experience_type = "project"
+                        "Experience building Python projects for at least 1 year" → experience_type = "project"
+
+                        IMPORTANT:
+                        Do NOT assume that experience means professional work experience.
+                        If the job description only states a number of years of experience and does
+                        not specify the type, use "any".
+
+                        Do NOT infer the experience type from the skill itself.
+
+                        For every skill, return exactly one:
+                        "any", "work", or "project".
 """
                 },
                 {
