@@ -124,6 +124,4 @@ SQLite
 
 ## Frontend
 
-Pairs with a separate React/Vite frontend — see `resume-analyzer-frontend/`. Set
-`VITE_API_BASE_URL` there to wherever this backend is deployed, and
-`VITE_USE_MOCK=false`.
+Pairs with a separate React/Vite frontend — see `resume-analyzer-frontend/`
