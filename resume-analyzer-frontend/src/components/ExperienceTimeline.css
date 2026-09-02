@@ -1,0 +1,112 @@
+.timeline {
+  padding: var(--space-6) 0;
+}
+
+.timeline__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.timeline__hint {
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+}
+
+.timeline__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.timeline__row {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.timeline__row-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.timeline__track {
+  position: relative;
+  height: 1.75rem;
+}
+
+.timeline__track::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--rule);
+}
+
+.timeline__bar {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 0.5rem;
+  transform: translateY(-50%);
+  background: var(--accent);
+  transform-origin: left center;
+  animation: timeline-draw 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  display: flex;
+  align-items: center;
+}
+
+@keyframes timeline-draw {
+  from {
+    transform: translateY(-50%) scaleX(0);
+  }
+  to {
+    transform: translateY(-50%) scaleX(1);
+  }
+}
+
+.timeline__bar-value {
+  position: absolute;
+  left: 0;
+  top: -1.35rem;
+  font-size: 0.625rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.timeline__required-marker {
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 1rem;
+  background: var(--status-negative);
+  transform: translate(-50%, -50%);
+}
+
+.timeline__required-label {
+  position: absolute;
+  bottom: -1.35rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.625rem;
+  color: var(--status-negative);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .timeline__row {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  .timeline__bar-value,
+  .timeline__required-label {
+    position: static;
+    display: inline-block;
+    margin-right: var(--space-3);
+  }
+}

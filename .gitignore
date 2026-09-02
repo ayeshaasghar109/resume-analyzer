@@ -5,8 +5,6 @@ __pycache__/
 *.db
 tempCodeRunnerFile.py
 resumes/
-# Flutter build artifacts
-resume_analyzer_frontend/.dart_tool/
-resume_analyzer_frontend/build/
-resume_analyzer_frontend/.flutter-plugins-dependencies
-resume_analyzer_frontend/.flutter-plugins
+.pytest_cache/
+.mypy_cache/
+.DS_Store

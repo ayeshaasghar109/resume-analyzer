@@ -8,6 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from fastapi import Form
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 import  json
 from groq import Groq
 from dotenv import load_dotenv
@@ -40,6 +41,13 @@ email TEXT
       conn.close()
 init_db()
 app=FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class Resume(BaseModel):
         name:str
         email:str
@@ -387,7 +395,7 @@ def calculate_experience(start_date,end_date):
     gap=end-start
     total_months=(end.year-start.year)*12+(end.month-start.month)
     return total_months
-# calculating the xperience
+# calculating the experience
 
 def verify_experience(job_skill,resume_experiences):
     total_months=0
@@ -421,7 +429,7 @@ def verify_experience(job_skill,resume_experiences):
     return total_months
              
          
-#calculating the wightage score
+#calculating the weightage score
 def weight_calculation(match):
     required_score=[]
     preferred_score=[]

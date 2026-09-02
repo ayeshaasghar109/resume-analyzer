@@ -1,0 +1,13 @@
+.footer {
+  max-width: var(--content-max);
+  margin: var(--space-7) auto 0;
+  padding: 0 var(--space-5) var(--space-6);
+}
+
+.footer__text {
+  padding-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}

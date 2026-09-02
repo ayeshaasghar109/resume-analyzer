@@ -1,0 +1,46 @@
+.jd {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+}
+
+.jd__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.jd__count {
+  font-size: 0.6875rem;
+  color: var(--ink-faint);
+}
+
+.jd__count--over {
+  color: var(--status-negative);
+}
+
+.jd__field {
+  flex: 1;
+  min-height: 15rem;
+  resize: none;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface);
+  padding: var(--space-5);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--ink);
+  max-width: 68ch;
+  width: 100%;
+}
+
+.jd__field::placeholder {
+  color: var(--ink-faint);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+}
+
+.jd__field:focus {
+  border-color: var(--accent);
+}
