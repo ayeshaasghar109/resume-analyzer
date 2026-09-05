@@ -3,6 +3,8 @@ from pydantic import BaseModel
 import sqlite3
 from fastapi import Depends
 import pdfplumber
+import torch 
+torch.set_num_threads(1)
 from  sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -43,7 +45,7 @@ init_db()
 app=FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
